@@ -1,0 +1,4 @@
+# Code owners: adjust to your organization/team
+/.github/ @TheDataEngineX/infra-team
+/src/careerdex/ @TheDataEngineX/data-team
+/tests/ @TheDataEngineX/data-team

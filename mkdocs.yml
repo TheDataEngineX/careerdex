@@ -1,0 +1,42 @@
+site_name: CareerDEX
+site_description: AI-powered career intelligence platform documentation
+site_url: https://docs.thedataenginex.org/careerdex
+repo_url: https://github.com/TheDataEngineX/careerdex
+repo_name: TheDataEngineX/careerdex
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: blue grey
+      accent: teal
+  features:
+    - content.code.copy
+    - navigation.sections
+    - search.highlight
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            show_source: true
+            show_root_heading: true
+            heading_level: 2
+            members_order: source
+            docstring_style: google
+
+nav:
+  - Home: index.md
+  - Quickstart: quickstart.md
+  - Architecture: ARCHITECTURE.md
+  - Development: DEVELOPMENT.md
+  - Contributing: CONTRIBUTING.md
+  - Observability: OBSERVABILITY.md
+  - ADRs:
+    - ADR Template: adr/0000-template.md
+
+docs_dir: docs
+site_dir: site

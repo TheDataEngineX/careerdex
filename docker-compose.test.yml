@@ -1,0 +1,27 @@
+# ---------------------------------------------------------------
+# CareerDEX — Integration Test Services (Docker Compose)
+# Provides cloud storage emulators for integration testing
+# without requiring real cloud accounts.
+#
+# Usage:  docker compose -f docker-compose.test.yml up -d
+# ---------------------------------------------------------------
+services:
+
+  # --- LocalStack — S3 emulation ---
+  localstack:
+    image: localstack/localstack:3.4
+    container_name: careerdex-localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=s3
+      - DEFAULT_REGION=us-east-1
+      - DEBUG=0
+
+  # --- fake-gcs-server — GCS emulation ---
+  fake-gcs-server:
+    image: fsouza/fake-gcs-server:1.49.1
+    container_name: careerdex-fake-gcs
+    ports:
+      - "4443:4443"
+    command: ["-scheme", "http", "-port", "4443"]

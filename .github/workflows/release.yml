@@ -1,0 +1,88 @@
+name: Release CareerDEX
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'pyproject.toml'
+
+permissions:
+  contents: write
+
+env:
+  SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    if: github.event.repository.default_branch == github.ref_name
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract version
+        id: version
+        run: |
+          VERSION=$(grep -m 1 "^version = " pyproject.toml | sed 's/version = "//;s/".*//')
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
+            echo "Invalid version: $VERSION"
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Check if tag exists
+        id: check_tag
+        run: |
+          if git rev-parse "${{ steps.version.outputs.tag }}" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create tag and release
+        if: steps.check_tag.outputs.exists == 'false'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const tag = '${{ steps.version.outputs.tag }}';
+            const version = '${{ steps.version.outputs.version }}';
+
+            await github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/tags/${tag}`,
+              sha: context.sha,
+            });
+
+            await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: tag,
+              name: `CareerDEX ${version}`,
+              body: `## CareerDEX ${version}\n\nReleased from commit ${context.sha.substring(0, 8)}.`,
+              draft: false,
+              prerelease: version.includes('-'),
+            });
+
+      - name: Notify release
+        if: steps.check_tag.outputs.exists == 'false'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            if (!process.env.SLACK_WEBHOOK) return;
+            try {
+              await fetch(process.env.SLACK_WEBHOOK, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  text: `🚀 CareerDEX ${{ steps.version.outputs.version }} released`
+                })
+              });
+            } catch (e) { console.log('Slack notification failed'); }
+        env:
+          SLACK_WEBHOOK: ${{ env.SLACK_WEBHOOK }}

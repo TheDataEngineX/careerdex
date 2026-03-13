@@ -1,0 +1,85 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.12"
+  SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "latest"
+      - run: uv python install ${{ env.PYTHON_VERSION }}
+      - run: uv sync
+      - run: uv run ruff check src/ tests/
+      - run: uv run ruff format --check src/ tests/
+
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "latest"
+      - run: uv python install ${{ env.PYTHON_VERSION }}
+      - run: uv sync
+      - run: uv run mypy src/careerdex/ --strict
+
+  test:
+    runs-on: ubuntu-latest
+    needs: [lint, typecheck]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "latest"
+      - run: uv python install ${{ env.PYTHON_VERSION }}
+      - run: uv sync
+      - run: uv run pytest tests/ -x --tb=short -q --cov=careerdex --cov-report=xml
+
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml
+
+  notify:
+    runs-on: ubuntu-latest
+    needs: [lint, typecheck, test]
+    if: always() && github.event_name == 'push'
+    steps:
+      - name: Notify CI result
+        uses: actions/github-script@v8
+        with:
+          script: |
+            if (!process.env.SLACK_WEBHOOK) return;
+            const needs = ${{ toJSON(needs) }};
+            const failed = Object.values(needs).some(j => j.result === 'failure');
+            const icon = failed ? '❌' : '✅';
+            const status = failed ? 'FAILED' : 'PASSED';
+            try {
+              await fetch(process.env.SLACK_WEBHOOK, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  text: `${icon} CareerDEX CI ${status} on ${process.env.REF}`
+                })
+              });
+            } catch (e) { console.log('Slack notification failed'); }
+        env:
+          SLACK_WEBHOOK: ${{ env.SLACK_WEBHOOK }}
+          REF: ${{ github.ref_name }}
