@@ -23,8 +23,6 @@ from typing import Any
 
 from loguru import logger
 
-from careerdex.core.exceptions import MissingDependencyError
-
 __all__ = [
     "CareerPathRecommender",
     "ChurnPredictor",
@@ -295,7 +293,7 @@ class SalaryPredictor:
                 "SalaryPredictor trained on %d synthetic samples",
                 len(X),
             )
-        except ImportError as exc:
+        except ImportError:
             msg = "SalaryPredictor requires xgboost. Install: uv sync --group ml"
             logger.warning("salary_predictor_unavailable", error=str(msg))
             self._use_xgboost = False
@@ -581,7 +579,7 @@ class SkillGapAnalyzer:
         try:
             from sklearn.feature_extraction.text import TfidfVectorizer
             from sklearn.metrics.pairwise import cosine_similarity
-        except ImportError as exc:
+        except ImportError:
             msg = "SkillGapAnalyzer requires scikit-learn. Install: uv sync --group ml"
             logger.warning("skill_gap_analyzer_unavailable", error=str(msg))
             self._available = False
@@ -625,13 +623,12 @@ class SkillGapAnalyzer:
             return []
 
         if not getattr(self, "_available", True):
-            # Fallback heuristic when scikit-learn is unavailable.
-            # Rank missing skills by their presence in the role profile and return fixed score values.
-            recommendations: list[SkillRecommendation] = []
+            # Fallback when scikit-learn unavailable: rank missing skills
+            fallback_recommendations: list[SkillRecommendation] = []
             for skill in missing[:top_k]:
                 category = self._SKILL_CATEGORIES.get(skill.lower(), "general")
-                salary_impact = 10_000 if category == "ml" else 5_000
-                recommendations.append(
+                salary_impact = 10_000.0 if category == "ml" else 5_000.0
+                fallback_recommendations.append(
                     SkillRecommendation(
                         skill=skill,
                         category=category,
@@ -640,7 +637,7 @@ class SkillGapAnalyzer:
                         learning_time_weeks=self._LEARNING_WEEKS.get(category, 6),
                     )
                 )
-            return recommendations
+            return fallback_recommendations
 
         role_idx = self._role_names.index(role_key)
         role_vector = self._tfidf_matrix[role_idx].toarray().flatten()
@@ -656,7 +653,7 @@ class SkillGapAnalyzer:
 
             category = self._SKILL_CATEGORIES.get(skill.lower(), "general")
             learning_weeks = self._LEARNING_WEEKS.get(category, 6)
-            salary_impact = demand * 15_000
+            salary_impact = float(demand * 15_000)
 
             recommendations.append(
                 SkillRecommendation(
@@ -814,7 +811,7 @@ class ChurnPredictor:
 
         try:
             from sklearn.linear_model import LogisticRegression
-        except ImportError as exc:
+        except ImportError:
             msg = "ChurnPredictor requires scikit-learn. Install: uv sync --group ml"
             logger.warning("churn_predictor_unavailable", error=str(msg))
             self._available = False
@@ -870,7 +867,7 @@ class ChurnPredictor:
 
         return X, y
 
-    def predict(
+    def _predict_churn_fallback(
         self,
         days_since_last_login: int,
         applications_per_day_30d: float,
@@ -878,41 +875,48 @@ class ChurnPredictor:
         profile_completeness: float,
         recent_rejections: int,
     ) -> dict[str, Any]:
-        """Predict churn probability."""
-        if not getattr(self, "_available", True):
-            # Fallback heuristic when scikit-learn is unavailable.
-            probability = min(
-                1.0,
-                max(
-                    0.0,
-                    0.1
-                    + days_since_last_login * 0.002
-                    + applications_per_day_30d * 0.05
-                    + interview_to_apply_ratio * 0.2
-                    + (1.0 - profile_completeness) * 0.2
-                    + recent_rejections * 0.01,
-                ),
-            )
-            is_high_risk = probability > self.threshold
-            factors = []
-            if days_since_last_login > 30:
-                factors.append("days_since_login")
-            if applications_per_day_30d > 3:
-                factors.append("applications_per_day")
-            if interview_to_apply_ratio < 0.2:
-                factors.append("interview_ratio")
-            if profile_completeness < 0.7:
-                factors.append("profile_completeness")
-            if recent_rejections > 3:
-                factors.append("recent_rejections")
+        """Fallback churn prediction when scikit-learn is unavailable."""
+        probability = min(
+            1.0,
+            max(
+                0.0,
+                0.1
+                + days_since_last_login * 0.002
+                + applications_per_day_30d * 0.05
+                + interview_to_apply_ratio * 0.2
+                + (1.0 - profile_completeness) * 0.2
+                + recent_rejections * 0.01,
+            ),
+        )
+        is_high_risk = probability > self.threshold
+        factors = []
+        if days_since_last_login > 30:
+            factors.append("days_since_login")
+        if applications_per_day_30d > 3:
+            factors.append("applications_per_day")
+        if interview_to_apply_ratio < 0.2:
+            factors.append("interview_ratio")
+        if profile_completeness < 0.7:
+            factors.append("profile_completeness")
+        if recent_rejections > 3:
+            factors.append("recent_rejections")
 
-            return {
-                "probability": round(probability, 4),
-                "is_high_risk": is_high_risk,
-                "threshold": self.threshold,
-                "factors": factors,
-            }
+        return {
+            "probability": round(probability, 4),
+            "is_high_risk": is_high_risk,
+            "threshold": self.threshold,
+            "factors": factors,
+        }
 
+    def _predict_churn_with_model(
+        self,
+        days_since_last_login: int,
+        applications_per_day_30d: float,
+        interview_to_apply_ratio: float,
+        profile_completeness: float,
+        recent_rejections: int,
+    ) -> dict[str, Any]:
+        """Predict churn using trained logistic regression model."""
         features = [
             [
                 float(days_since_last_login),
@@ -946,3 +950,29 @@ class ChurnPredictor:
             "threshold": self.threshold,
             "factors": factors,
         }
+
+    def predict(
+        self,
+        days_since_last_login: int,
+        applications_per_day_30d: float,
+        interview_to_apply_ratio: float,
+        profile_completeness: float,
+        recent_rejections: int,
+    ) -> dict[str, Any]:
+        """Predict churn probability."""
+        if not getattr(self, "_available", True):
+            return self._predict_churn_fallback(
+                days_since_last_login,
+                applications_per_day_30d,
+                interview_to_apply_ratio,
+                profile_completeness,
+                recent_rejections,
+            )
+
+        return self._predict_churn_with_model(
+            days_since_last_login,
+            applications_per_day_30d,
+            interview_to_apply_ratio,
+            profile_completeness,
+            recent_rejections,
+        )
