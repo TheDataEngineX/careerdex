@@ -10,6 +10,7 @@ produces data.
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
+from typing import Any
 
 from airflow import DAG
 from airflow.models import Variable
@@ -46,7 +47,7 @@ dag = DAG(
 )
 
 
-def fetch_linkedin_jobs(**context):
+def fetch_linkedin_jobs(context: dict[str, Any]) -> None:
     """Fetch jobs from LinkedIn API.
 
     Raises:
@@ -59,7 +60,7 @@ def fetch_linkedin_jobs(**context):
     raise StubNotImplementedError(msg)
 
 
-def fetch_indeed_jobs(**context):
+def fetch_indeed_jobs(context: dict[str, Any]) -> None:
     """Fetch jobs from Indeed.
 
     Raises:
@@ -72,7 +73,7 @@ def fetch_indeed_jobs(**context):
     raise StubNotImplementedError(msg)
 
 
-def fetch_glassdoor_jobs(**context):
+def fetch_glassdoor_jobs(context: dict[str, Any]) -> None:
     """Fetch jobs from Glassdoor.
 
     Raises:
@@ -85,7 +86,7 @@ def fetch_glassdoor_jobs(**context):
     raise StubNotImplementedError(msg)
 
 
-def fetch_company_career_pages(**context):
+def fetch_company_career_pages(context: dict[str, Any]) -> None:
     """Fetch jobs from company career pages.
 
     Raises:
@@ -98,7 +99,7 @@ def fetch_company_career_pages(**context):
     raise StubNotImplementedError(msg)
 
 
-def store_bronze_layer(**context):
+def store_bronze_layer(context: dict[str, Any]) -> dict[str, int]:
     """Store raw jobs to Bronze layer."""
     logger.info("Storing to Bronze layer...")
     task_instance = context["task_instance"]
@@ -118,7 +119,7 @@ def store_bronze_layer(**context):
     return {"bronze_jobs": total_jobs}
 
 
-def deduplicate_jobs(**context):
+def deduplicate_jobs(context: dict[str, Any]) -> dict[str, int]:
     """Deduplicate jobs across sources."""
     logger.info("Deduplicating jobs...")
     task_instance = context["task_instance"]
@@ -129,7 +130,7 @@ def deduplicate_jobs(**context):
     return {"deduplicated_jobs": bronze_result["bronze_jobs"]}
 
 
-def enrich_with_embeddings(**context):
+def enrich_with_embeddings(context: dict[str, Any]) -> dict[str, int]:
     """Enrich jobs with embeddings."""
     logger.info("Enriching jobs with embeddings...")
     task_instance = context["task_instance"]
@@ -140,7 +141,7 @@ def enrich_with_embeddings(**context):
     return {"enriched_jobs": dedup_result["deduplicated_jobs"]}
 
 
-def store_gold_layer(**context):
+def store_gold_layer(context: dict[str, Any]) -> dict[str, int]:
     """Store enriched jobs to Gold layer."""
     logger.info("Storing to Gold layer...")
     task_instance = context["task_instance"]
@@ -151,7 +152,7 @@ def store_gold_layer(**context):
     return {"gold_jobs": enrich_result["enriched_jobs"]}
 
 
-def quality_validation(**context):
+def quality_validation(context: dict[str, Any]) -> dict[str, object]:
     """Run data quality checks."""
     logger.info("Running data quality validation...")
     task_instance = context["task_instance"]
@@ -169,7 +170,7 @@ def quality_validation(**context):
     return {"quality_score": quality_score, "threshold": threshold}
 
 
-def notify_completion(**context):
+def notify_completion(context: dict[str, Any]) -> dict[str, object]:
     """Notify job completion via Slack and GitHub."""
     logger.info("Notifying completion...")
     task_instance = context["task_instance"]
@@ -181,7 +182,7 @@ def notify_completion(**context):
     jobs_count = gold_result["gold_jobs"]
     quality_score = quality_result["quality_score"]
     threshold = quality_result["threshold"]
-    execution_date = context["execution_date"]
+    execution_date: datetime = context["execution_date"]
 
     # Get credentials from Airflow Variables
     slack_webhook = Variable.get("CAREERDEX_SLACK_WEBHOOK", "")
@@ -194,7 +195,7 @@ def notify_completion(**context):
 
         # Determine pipeline status
         if quality_score >= threshold:
-            execution_id = context["run_id"]
+            execution_id: str = context["run_id"]
             duration = (datetime.now(tz=UTC) - execution_date).total_seconds()
 
             notifier.notify_pipeline_success(

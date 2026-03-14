@@ -60,7 +60,7 @@ def load_config(path: Path | None = None) -> dict[str, Any]:
         msg = f"Config file not found: {config_path}"
         raise FileNotFoundError(msg)
     with config_path.open() as fh:
-        raw = json.load(fh)
+        raw: dict[str, Any] = json.load(fh)
 
     # Validate through Pydantic — raises ValidationError on bad config
     CareerDEXSettings.model_validate(raw)
@@ -108,18 +108,34 @@ class Phase1Foundation:
         logger.info("Phase 1: validating schemas")
 
         now = datetime.now(tz=UTC)
+        from careerdex.core.schemas import JobLocation, JobSourceEnum
+
         JobPosting(
             job_id="test_001",
-            source="indeed",
+            source=JobSourceEnum.INDEED,
             source_job_id="indeed_12345",
             company_name="TestCorp",
+            company_industry="Technology",
+            company_size="51-200",
             job_title="Software Engineer",
             job_description="Looking for a talented engineer to build data systems.",
-            location={"country": "US", "city": "San Francisco", "remote_eligible": True},
+            location=JobLocation(
+                country="US",
+                city="San Francisco",
+                state="CA",
+                zipcode="94105",
+                latitude=37.7749,
+                longitude=-122.4194,
+                remote_eligible=True,
+            ),
             employment_type="full_time",
+            experience_level="mid_level",
+            years_experience_required=3,
             posted_date=now,
             last_modified_date=now,
+            expiration_date=None,
             dex_hash="abc123def456",
+            dex_dedup_id=None,
         )
         self.components.append("JobPosting")
 
@@ -128,6 +144,12 @@ class Phase1Foundation:
             email="test@example.com",
             first_name="John",
             last_name="Doe",
+            current_title="Software Engineer",
+            current_company="Tech Corp",
+            years_experience=5,
+            education="Bachelor of Science in Computer Science",
+            willing_to_relocate=False,
+            salary_expectations={"min": 100000.0, "max": 150000.0},
             created_date=now,
             last_activity_date=now,
         )
@@ -137,8 +159,10 @@ class Phase1Foundation:
             pipeline_name="careerdex-job-ingestion",
             execution_id="exec_001",
             execution_start_time=now,
+            execution_end_time=None,
             status="running",
             layer="bronze",
+            error_message=None,
         )
         self.components.append("PipelineExecutionMetadata")
 

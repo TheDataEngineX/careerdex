@@ -64,7 +64,7 @@ class SlackNotifier:
             "error": "#FF0000",
         }
 
-        payload = {
+        payload: dict[str, object] = {
             "channel": self.channel,
             "attachments": [
                 {
@@ -87,7 +87,9 @@ class SlackNotifier:
                         "short": True,
                     }
                 )
-            payload["attachments"][0]["fields"] = fields
+            attachments = payload["attachments"]
+            if isinstance(attachments, list) and len(attachments) > 0:
+                attachments[0]["fields"] = fields
 
         try:
             response = requests.post(self.webhook_url, json=payload)

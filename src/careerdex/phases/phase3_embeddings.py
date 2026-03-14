@@ -331,7 +331,7 @@ class EmbeddingGenerator:
         self._model: Any = None
 
         try:
-            from sentence_transformers import SentenceTransformer  # type: ignore[import-untyped]
+            from sentence_transformers import SentenceTransformer
 
             self._model = SentenceTransformer(model_name)
             self.dimension = self._model.get_sentence_embedding_dimension()
@@ -349,8 +349,8 @@ class EmbeddingGenerator:
             MissingDependencyError: If ``sentence-transformers`` is not installed.
         """
         if self._model is not None:
-            vec = self._model.encode(text)
-            return vec.tolist()
+            vec: list[float] = self._model.encode(text).tolist()
+            return vec
         msg = (
             "sentence-transformers is required for embedding generation. "
             "Install it with: pip install sentence-transformers"

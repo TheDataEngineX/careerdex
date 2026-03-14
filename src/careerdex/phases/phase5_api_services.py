@@ -189,6 +189,7 @@ careerdex_router = APIRouter(prefix="/api/v1/careerdex", tags=["careerdex"])
 
 # Singletons (created once per process)
 _matcher = ResumeJobMatcher()
+_salary: SalaryPredictor | None = None
 try:
     _salary = SalaryPredictor()
 except MissingDependencyError as exc:
@@ -196,6 +197,7 @@ except MissingDependencyError as exc:
     _salary = None
 _skill_gap = SkillGapAnalyzer()
 _career_path = CareerPathRecommender()
+_churn: ChurnPredictor | None = None
 try:
     _churn = ChurnPredictor()
 except MissingDependencyError as exc:
@@ -533,7 +535,7 @@ async def get_career_health(
 
 
 # Curated market trends data — in production this comes from Gold layer analytics.
-_TRENDING_SKILLS: list[dict[str, object]] = [
+_TRENDING_SKILLS: list[dict[str, str | float | int]] = [
     {
         "skill": "python",
         "category": "language",

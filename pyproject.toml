@@ -94,7 +94,7 @@ warn_unreachable = true
 no_implicit_optional = true
 
 [[tool.mypy.overrides]]
-module = ["structlog.*", "loguru.*", "prometheus_client.*", "opentelemetry.*"]
+module = ["structlog.*", "loguru.*", "prometheus_client.*", "opentelemetry.*", "airflow.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
