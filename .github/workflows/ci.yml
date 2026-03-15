@@ -1,4 +1,4 @@
-name: Continuous Integration
+name: CI
 
 on:
   push:
@@ -6,80 +6,62 @@ on:
   pull_request:
     branches: [main, dev]
 
-concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
-
-env:
-  PYTHON_VERSION: "3.12"
-  SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+permissions:
+  contents: read
 
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@v5
         with:
           version: "latest"
-      - run: uv python install ${{ env.PYTHON_VERSION }}
-      - run: uv sync
-      - run: uv run ruff check src/ tests/
-      - run: uv run ruff format --check src/ tests/
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: uv sync --all-extras
+      - name: Lint
+        run: uv run ruff check src/ tests/
+      - name: Format check
+        run: uv run ruff format --check src/ tests/
 
   typecheck:
     runs-on: ubuntu-latest
+    needs: lint
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@v5
         with:
           version: "latest"
-      - run: uv python install ${{ env.PYTHON_VERSION }}
-      - run: uv sync
-      - run: uv run mypy src/careerdex/ --strict
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: uv sync --all-extras
+      - name: Typecheck
+        run: uv run mypy src/careerdex/ --strict
 
   test:
     runs-on: ubuntu-latest
     needs: [lint, typecheck]
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@v5
         with:
           version: "latest"
-      - run: uv python install ${{ env.PYTHON_VERSION }}
-      - run: uv sync
-      - run: uv run pytest tests/ -x --tb=short -q --cov=careerdex --cov-report=xml
-
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: uv sync --all-extras
+      - name: Test
+        run: uv run pytest tests/ -x --tb=short -q --cov=careerdex --cov-report=xml
       - name: Upload coverage
-        if: always()
-        uses: actions/upload-artifact@v4
+        uses: codecov/codecov-action@v4
         with:
-          name: coverage-report
-          path: coverage.xml
-
-  notify:
-    runs-on: ubuntu-latest
-    needs: [lint, typecheck, test]
-    if: always() && github.event_name == 'push'
-    steps:
-      - name: Notify CI result
-        uses: actions/github-script@v8
-        with:
-          script: |
-            if (!process.env.SLACK_WEBHOOK) return;
-            const needs = ${{ toJSON(needs) }};
-            const failed = Object.values(needs).some(j => j.result === 'failure');
-            const icon = failed ? '❌' : '✅';
-            const status = failed ? 'FAILED' : 'PASSED';
-            try {
-              await fetch(process.env.SLACK_WEBHOOK, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  text: `${icon} CareerDEX CI ${status} on ${process.env.REF}`
-                })
-              });
-            } catch (e) { console.log('Slack notification failed'); }
+          flags: careerdex
+          fail_ci_if_error: false
         env:
-          SLACK_WEBHOOK: ${{ env.SLACK_WEBHOOK }}
-          REF: ${{ github.ref_name }}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
