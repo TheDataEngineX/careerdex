@@ -14,7 +14,7 @@ jobs:
   trivy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Run Trivy repo scan
         uses: aquasecurity/trivy-action@0.35.0
@@ -49,7 +49,7 @@ jobs:
       matrix:
         language: [python]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
