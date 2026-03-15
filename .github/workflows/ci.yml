@@ -59,7 +59,7 @@ jobs:
       - name: Test
         run: uv run pytest tests/ -x --tb=short -q --cov=careerdex --cov-report=xml
       - name: Upload coverage
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           flags: careerdex
           fail_ci_if_error: false
