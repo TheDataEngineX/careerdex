@@ -18,7 +18,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "dataenginex[api]>=0.6.0",
+    "dataenginex>=0.6.1",
     "click>=8.1",
     "rich>=13.0",
     "pyyaml>=6.0",
@@ -69,9 +69,6 @@ dev = [
 [tool.uv]
 python-preference = "only-managed"
 default-groups = ["dev"]
-
-[tool.uv.sources]
-dataenginex = { path = "../dex", editable = true }
 
 [tool.ruff]
 line-length = 100
