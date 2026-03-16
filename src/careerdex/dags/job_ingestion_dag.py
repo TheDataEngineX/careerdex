@@ -40,7 +40,7 @@ dag = DAG(
     "careerdex_job_ingestion",
     default_args=default_args,
     description="CareerDEX 3-hour job ingestion pipeline",
-    schedule_interval="0 */3 * * *",  # Every 3 hours
+    schedule="0 */3 * * *",  # Every 3 hours
     catchup=False,
     max_active_runs=1,
     tags=["careerdex", "job-ingestion"],

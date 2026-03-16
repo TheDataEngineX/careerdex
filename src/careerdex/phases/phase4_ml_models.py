@@ -372,9 +372,7 @@ class SalaryPredictor:
         years_exp = years_experience if years_experience is not None else 3
 
         if getattr(self, "_use_xgboost", False):
-            features = [
-                self._encode(title, location, seniority, skill_count, years_exp)
-            ]
+            features = [self._encode(title, location, seniority, skill_count, years_exp)]
             p25 = float(self._model_p25.predict(features)[0])
             p50 = float(self._model_p50.predict(features)[0])
             p75 = float(self._model_p75.predict(features)[0])
