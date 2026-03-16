@@ -8,7 +8,7 @@
 
 **Stack:** Python 3.12+ · FastAPI (via dataenginex[api]) · uv · Ruff · mypy strict · pytest · Port 8003
 
-**Version:** 0.5.0 | **Depends on:** dataenginex[api] >= 0.6.0
+**Version:** `uv run poe version` | **Depends on:** dataenginex[api] (see `pyproject.toml`)
 
 ## Build & Run Commands
 
