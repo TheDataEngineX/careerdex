@@ -3,63 +3,43 @@ name: CI
 on:
   push:
     branches: [main, dev]
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - "LICENSE"
+      - ".github/CODEOWNERS"
   pull_request:
     branches: [main, dev]
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - "LICENSE"
+      - ".github/CODEOWNERS"
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
-  lint:
+  ci:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
       - uses: astral-sh/setup-uv@v7
         with:
           version: "latest"
+          enable-cache: true
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - name: Install dependencies
-        run: uv sync --all-extras
-      - name: Lint
-        run: uv run ruff check src/ tests/
-      - name: Format check
-        run: uv run ruff format --check src/ tests/
-
-  typecheck:
-    runs-on: ubuntu-latest
-    needs: lint
-    steps:
-      - uses: actions/checkout@v6
-      - uses: astral-sh/setup-uv@v7
-        with:
-          version: "latest"
-      - uses: actions/setup-python@v6
-        with:
-          python-version: "3.12"
-      - name: Install dependencies
-        run: uv sync --all-extras
-      - name: Typecheck
-        run: uv run mypy src/careerdex/ --strict
-
-  test:
-    runs-on: ubuntu-latest
-    needs: [lint, typecheck]
-    steps:
-      - uses: actions/checkout@v6
-      - uses: astral-sh/setup-uv@v7
-        with:
-          version: "latest"
-      - uses: actions/setup-python@v6
-        with:
-          python-version: "3.12"
-      - name: Install dependencies
-        run: uv sync --all-extras
-      - name: Test
-        run: uv run pytest tests/ -x --tb=short -q --cov=careerdex --cov-report=xml
-      - name: Upload coverage
-        uses: codecov/codecov-action@v5
+      - run: uv sync --all-extras
+      - run: uv run poe lint
+      - run: uv run poe typecheck
+      - run: uv run pytest tests/ -x --tb=short -q --cov=careerdex --cov-report=xml
+      - uses: codecov/codecov-action@v5
         with:
           flags: careerdex
           fail_ci_if_error: false
