@@ -31,7 +31,9 @@ def serve(port: int, host: str, reload: bool) -> None:
 @click.option("--limit", default=100, help="Maximum jobs to ingest.")
 def ingest(source: str, limit: int) -> None:
     """Ingest job data from external sources."""
-    raise NotImplementedError("Job ingestion pipeline not yet connected — implement JobIngestionPipeline")
+    raise NotImplementedError(
+        "Job ingestion pipeline not yet connected — implement JobIngestionPipeline"
+    )
 
 
 @main.command()
