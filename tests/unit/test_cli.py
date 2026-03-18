@@ -21,7 +21,7 @@ class TestCLI:
     def test_version_flag(self) -> None:
         result = self.runner.invoke(main, ["--version"])
         assert result.exit_code == 0
-        assert "0.5.0" in result.output
+        assert "0.5.1" in result.output
 
     def test_serve_command_exists(self) -> None:
         result = self.runner.invoke(main, ["serve", "--help"])
