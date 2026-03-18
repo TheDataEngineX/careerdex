@@ -8,7 +8,7 @@ CareerDEX is an AI-powered career intelligence platform that combines job data i
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                   CareerDEX (v0.5.0)                        │
+│                   CareerDEX (v0.5.1)                        │
 ├─────────────────────────────────────────────────────────────┤
 │                                                              │
 │  ┌──────────────┐     ┌──────────────┐    ┌──────────────┐ │
@@ -81,9 +81,9 @@ Local JSON / CSV Files
 Order matters (first added = outermost):
 
 1. **RequestLoggingMiddleware** — Structured request/response logging
-2. **PrometheusMetricsMiddleware** — HTTP metrics (`http_` prefix)
-3. **AuthMiddleware** — JWT validation (HS256, configurable)
-4. **RateLimitMiddleware** — Token bucket rate limiting
+1. **PrometheusMetricsMiddleware** — HTTP metrics (`http_` prefix)
+1. **AuthMiddleware** — JWT validation (HS256, configurable)
+1. **RateLimitMiddleware** — Token bucket rate limiting
 
 ## Dependencies
 

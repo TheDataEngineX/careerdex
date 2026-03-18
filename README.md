@@ -9,7 +9,7 @@
 
 Built on [dataenginex](https://github.com/TheDataEngineX/dataenginex) and [datadex](https://github.com/TheDataEngineX/datadex).
 
----
+______________________________________________________________________
 
 ## Quick Start
 
@@ -134,6 +134,6 @@ uv run poe docker-down       # Stop everything
 
 Services: CareerDEX API (:8003), Prometheus (:9090), Grafana (:3000), Jaeger (:16686)
 
----
+______________________________________________________________________
 
 **Part of [TheDataEngineX](https://github.com/TheDataEngineX) ecosystem** | **License**: MIT

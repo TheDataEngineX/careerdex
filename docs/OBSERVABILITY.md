@@ -59,5 +59,5 @@ uv run poe docker-up
 ## Troubleshooting
 
 1. **No metrics**: Check `/metrics` endpoint; verify PrometheusMetricsMiddleware is registered
-2. **No traces**: Verify `OTEL_EXPORTER_OTLP_ENDPOINT` env var and Jaeger connectivity
-3. **Missing request IDs**: Check RequestLoggingMiddleware is first in the middleware stack
+1. **No traces**: Verify `OTEL_EXPORTER_OTLP_ENDPOINT` env var and Jaeger connectivity
+1. **Missing request IDs**: Check RequestLoggingMiddleware is first in the middleware stack

@@ -31,7 +31,7 @@ List other options evaluated and why they were rejected:
    - Pros:
    - Cons:
 
-2. **Alternative 2**
+1. **Alternative 2**
 
    - Pros:
    - Cons:
