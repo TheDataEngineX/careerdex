@@ -26,10 +26,10 @@ dependencies = [
 
 [project.optional-dependencies]
 ml = [
-    "scikit-learn>=1.6.0",
-    "xgboost>=3.0.0",
+    "scikit-learn>=1.8.0",
+    "xgboost>=3.2.0",
     "numpy>=2.4",
-    "sentence-transformers>=2.0.0",
+    "sentence-transformers>=5.0.0",
 ]
 airflow = [
     "apache-airflow>=2.8.0,<3.0.0",
