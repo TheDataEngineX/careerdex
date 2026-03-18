@@ -599,9 +599,9 @@ requires-dist = [
     { name = "pyyaml", specifier = ">=6.0" },
     { name = "requests", marker = "extra == 'airflow'", specifier = ">=2.32.0" },
     { name = "rich", specifier = ">=13.0" },
-    { name = "scikit-learn", marker = "extra == 'ml'", specifier = ">=1.6.0" },
-    { name = "sentence-transformers", marker = "extra == 'ml'", specifier = ">=2.0.0" },
-    { name = "xgboost", marker = "extra == 'ml'", specifier = ">=3.0.0" },
+    { name = "scikit-learn", marker = "extra == 'ml'", specifier = ">=1.8.0" },
+    { name = "sentence-transformers", marker = "extra == 'ml'", specifier = ">=5.0.0" },
+    { name = "xgboost", marker = "extra == 'ml'", specifier = ">=3.2.0" },
 ]
 provides-extras = ["ml", "airflow"]
 
