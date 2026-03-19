@@ -2,7 +2,7 @@
 
 Update this file after any correction. Pattern: rule → why → how to apply.
 
----
+______________________________________________________________________
 
 <!-- Example format:
 ## Lesson: <short title>

@@ -2,7 +2,7 @@
 
 Record findings, dead ends, architectural decisions, and external context.
 
----
+______________________________________________________________________
 
 <!-- Example format:
 ## <date> — <topic>

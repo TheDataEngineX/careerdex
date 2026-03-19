@@ -5,10 +5,10 @@ Thank you for contributing!
 ## Getting Started
 
 1. Read [DEVELOPMENT.md](DEVELOPMENT.md) for setup instructions
-2. Fork the repository
-3. Create a feature branch from `dev`
-4. Make your changes
-5. Submit a pull request
+1. Fork the repository
+1. Create a feature branch from `dev`
+1. Make your changes
+1. Submit a pull request
 
 ## Commit Messages
 
@@ -38,11 +38,11 @@ Use conventional commit format:
    uv run poe test
    ```
 
-2. Tests must pass with 80%+ coverage for new code
+1. Tests must pass with 80%+ coverage for new code
 
-3. Update documentation if needed
+1. Update documentation if needed
 
-4. Use PR template in `.github/PULL_REQUEST_TEMPLATE.md`
+1. Use PR template in `.github/PULL_REQUEST_TEMPLATE.md`
 
 ## Pull Request Process
 
