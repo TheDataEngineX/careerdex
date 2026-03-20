@@ -267,5 +267,5 @@ def openapi_yaml() -> PlainTextResponse:
 
 if __name__ == "__main__":
     host = os.getenv("CAREERDEX_HOST", "0.0.0.0")
-    port = int(os.getenv("CAREERDEX_PORT", "8000"))
+    port = int(os.getenv("CAREERDEX_PORT", "17003"))
     uvicorn.run(app, host=host, port=port)

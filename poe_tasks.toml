@@ -1,7 +1,8 @@
 [tool.poe]
 executor.type = "uv"
+include = ["../.github/poe_tasks_base.toml"]
 
-# Installation & Setup
+# ── Installation & Setup ──────────────────────────────────────────────────────
 [tool.poe.tasks.install]
 shell = "uv sync && uvx pre-commit install"
 help = "Install dependencies and pre-commit hooks"
@@ -10,20 +11,12 @@ help = "Install dependencies and pre-commit hooks"
 shell = "uv sync --all-groups && uvx pre-commit install"
 help = "One-step setup: install all dependency groups and pre-commit hooks"
 
-# Development
+# ── Development ───────────────────────────────────────────────────────────────
 [tool.poe.tasks.dev]
-cmd = "uvicorn careerdex.api.main:app --reload --port 8003"
-help = "Run development server on localhost:8003"
+cmd = "uvicorn careerdex.api.main:app --reload --port 17003"
+help = "Run development server on localhost:17003"
 
-# Testing
-[tool.poe.tasks.test-core]
-cmd = "pytest tests/ -v --tb=short"
-help = "Internal: run all tests without dependency sync"
-
-[tool.poe.tasks.test-unit-core]
-cmd = "pytest tests/unit/ -v --tb=short"
-help = "Internal: run unit tests without dependency sync"
-
+# ── Testing ───────────────────────────────────────────────────────────────────
 [tool.poe.tasks.test-integration-core]
 cmd = "pytest tests/integration/ -v --tb=short"
 help = "Internal: run integration tests without dependency sync"
@@ -31,14 +24,6 @@ help = "Internal: run integration tests without dependency sync"
 [tool.poe.tasks.test-cov-core]
 cmd = "pytest tests/ -v --cov=careerdex --cov-report=html --cov-report=xml:coverage.xml --cov-report=term-missing --cov-fail-under=80"
 help = "Internal: run coverage tests without dependency sync (fails below 80%)"
-
-[tool.poe.tasks.test]
-shell = "poe uv-sync && poe test-core"
-help = "Run all tests"
-
-[tool.poe.tasks.test-unit]
-shell = "poe uv-sync && poe test-unit-core"
-help = "Run unit tests only"
 
 [tool.poe.tasks.test-integration]
 shell = "poe uv-sync && poe test-integration-core"
@@ -48,32 +33,15 @@ help = "Run integration tests only"
 shell = "poe uv-sync && poe test-cov-core"
 help = "Run tests with coverage report (HTML + XML + terminal)"
 
-# Load Testing
 [tool.poe.tasks.loadtest]
-cmd = "locust -f tests/load/locustfile.py --headless -u 10 -r 2 -t 30s --host http://localhost:8003"
-help = "Run Locust load tests (headless, 10 users, 30s) against localhost:8003"
+cmd = "locust -f tests/load/locustfile.py --headless -u 10 -r 2 -t 30s --host http://localhost:17003"
+help = "Run Locust load tests (headless, 10 users, 30s) against localhost:17003"
 
-# Code Quality
-[tool.poe.tasks.lint]
-shell = "ruff check src/ tests/"
-help = "Run ruff lint on source and test files"
-
-[tool.poe.tasks.lint-fix]
-shell = "ruff check --fix src/ tests/ && ruff format src/ tests/"
-help = "Auto-fix lint issues and format code"
-
-[tool.poe.tasks.format]
-shell = "ruff format src/ tests/"
-help = "Format code with ruff"
-
+# ── Code Quality ──────────────────────────────────────────────────────────────
 [tool.poe.tasks.typecheck]
 cmd = "mypy src/careerdex/ --config-file=pyproject.toml --no-incremental"
 help = "Run mypy type checking with project config"
-env = { UV_PYTHON = "3.12", UV_PROJECT_ENVIRONMENT = ".venv" }
-
-[tool.poe.tasks.security]
-cmd = "uvx pip-audit --progress-spinner off"
-help = "Audit dependencies for known vulnerabilities (tool-style via uvx)"
+env = { UV_PYTHON = "3.13", UV_PROJECT_ENVIRONMENT = ".venv" }
 
 [tool.poe.tasks.pre-commit]
 cmd = "uvx pre-commit run --all-files"
@@ -87,11 +55,7 @@ help = "Internal: run full project checks without dependency sync"
 shell = "poe uv-sync && poe check-all-core"
 help = "Run full project checks: pre-commit hooks and tests"
 
-[tool.poe.tasks.clean]
-shell = "find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null; find . -type f -name '*.pyc' -delete 2>/dev/null; rm -rf .pytest_cache .mypy_cache .ruff_cache dist build *.egg-info 2>/dev/null; echo 'Cache and artifacts cleaned'"
-help = "Remove cache and build artifacts"
-
-# Docker
+# ── Docker ────────────────────────────────────────────────────────────────────
 [tool.poe.tasks.docker-build]
 cmd = "docker build -t careerdex:latest ."
 help = "Build Docker image"
@@ -108,33 +72,12 @@ help = "Stop Docker Compose services"
 cmd = "docker compose logs -f"
 help = "View Docker Compose logs"
 
-# Documentation
+# ── Documentation ─────────────────────────────────────────────────────────────
 [tool.poe.tasks.docs]
 shell = "zensical build --clean && echo 'Documentation built. Open site/index.html'"
 help = "Build documentation site with Zensical"
 
-# Version Management
-[tool.poe.tasks.version]
-shell = "python3 -c \"import tomllib; t=tomllib.load(open('pyproject.toml','rb')); print(t['project']['version'])\""
-help = "Show current version"
-
-[tool.poe.tasks.version-patch]
-shell = "bash ../.github/scripts/bump-version.sh patch && uv lock"
-help = "Bump patch version (x.x.X) — bug fixes, no new features"
-
-[tool.poe.tasks.version-minor]
-shell = "bash ../.github/scripts/bump-version.sh minor && uv lock"
-help = "Bump minor version (x.X.0) — new backward-compatible features"
-
-[tool.poe.tasks.version-major]
-shell = "bash ../.github/scripts/bump-version.sh major && uv lock"
-help = "Bump major version (X.0.0) — breaking changes"
-
-# UV Package Manager
-[tool.poe.tasks.uv-lock]
-cmd = "uv lock"
-help = "Resolve dependencies from pyproject.toml and write uv.lock"
-
+# ── UV Package Manager ────────────────────────────────────────────────────────
 [tool.poe.tasks.uv-sync]
 cmd = "uv sync"
 help = "Install dependencies from uv.lock"

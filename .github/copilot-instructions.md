@@ -10,7 +10,7 @@ These standards apply to **all code** in the CareerDEX project.
 
 **Stack:** Python 3.12+ · FastAPI (via dataenginex[api]) · uv · Ruff · mypy strict · pytest · Docker
 
-**Port:** 8003
+**Port:** 17003
 
 ## Commands
 
@@ -19,7 +19,7 @@ uv run poe lint          # Ruff lint
 uv run poe typecheck     # mypy --strict
 uv run poe test          # pytest
 uv run poe check-all     # lint + typecheck + test
-uv run poe dev           # Dev server (port 8003)
+uv run poe dev           # Dev server (port 17003)
 ```
 
 ## Coding Standards

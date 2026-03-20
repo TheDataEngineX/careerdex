@@ -55,7 +55,7 @@ Local JSON / CSV Files
   │  Churn Predictor (logistic regression)   │
   └──────────────────────────────────────────┘
          ↓
-  Phase 5: FastAPI Service (:8003)
+  Phase 5: FastAPI Service (:17003)
   • /api/v1/careerdex/salary/prediction
   • /api/v1/careerdex/insights/skill-gaps
   • /api/v1/careerdex/market/careers
