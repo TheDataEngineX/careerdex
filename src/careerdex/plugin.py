@@ -11,11 +11,18 @@ Configuration in ``pyproject.toml``::
 
 from __future__ import annotations
 
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version as _pkg_version
 from typing import Any
 
 from dataenginex.plugins import DataEngineXPlugin
 
-_CAREERDEX_VERSION = "0.5.0"
+
+def _get_version() -> str:
+    try:
+        return str(_pkg_version("careerdex"))
+    except PackageNotFoundError:
+        return "0.0.0"
 
 
 class CareerDEXPlugin(DataEngineXPlugin):
@@ -31,7 +38,7 @@ class CareerDEXPlugin(DataEngineXPlugin):
 
     @property
     def version(self) -> str:
-        return _CAREERDEX_VERSION
+        return _get_version()
 
     def health_check(self) -> dict[str, Any]:
         """Check CareerDEX component health.

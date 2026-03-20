@@ -11,7 +11,7 @@ CareerDEX implements observability using **Prometheus** for metrics, **OpenTelem
 ```
 ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
 │  CareerDEX   │────→│  Prometheus  │────→│   Grafana    │
-│  :8003       │     │  :9090       │     │   :3000      │
+│  :17003       │     │  :9090       │     │   :3000      │
 └──────┬───────┘     └──────────────┘     └──────────────┘
        │
        └──→ OTLP ──→ Jaeger :4317/:16686
@@ -50,7 +50,7 @@ Access metrics: `GET /metrics`
 uv run poe docker-up
 
 # Services:
-# CareerDEX API:  http://localhost:8003
+# CareerDEX API:  http://localhost:17003
 # Prometheus:     http://localhost:9090
 # Grafana:        http://localhost:3000
 # Jaeger UI:      http://localhost:16686

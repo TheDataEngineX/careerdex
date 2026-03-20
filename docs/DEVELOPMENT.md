@@ -31,7 +31,7 @@ uv run poe check-all
 
 ```bash
 # Development server
-uv run poe dev                 # FastAPI on http://localhost:8003
+uv run poe dev                 # FastAPI on http://localhost:17003
 
 # Quality checks
 uv run poe lint                # Ruff lint
@@ -98,8 +98,8 @@ uv run poe test
 
 # 4. Manual verification
 uv run poe dev
-curl http://localhost:8003/health
-curl http://localhost:8003/api/v1/careerdex/market/trends
+curl http://localhost:17003/health
+curl http://localhost:17003/api/v1/careerdex/market/trends
 ```
 
 ## Git Conventions

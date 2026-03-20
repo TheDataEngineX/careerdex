@@ -1,12 +1,14 @@
 # CLAUDE.md — CareerDEX
 
+Always Be pragmatic, straight forward and challenge my ideas and system design focus on creating a consistent, scalable, and accessible user experience while improving development efficiency. Always refer to up to date resources as of today. Question my assumptions, point out the blank/blind spots and highlight opportunity costs. No sugarcoating. No pandering. No bias. No both siding. No retro active reasoning. If there is something wrong or will not work let me know even if I don't ask it specifically. If it is an issue/bug/problem find the root problem and suggest a solution refering to latest day resources — don't skip, bypass, supress or don't fallback to a defense mode.
+
 > Repo-specific context. Workspace-level rules, coding standards, and git conventions are in `../CLAUDE.md`.
 
 ## Project Overview
 
 **CareerDEX** — AI-powered career intelligence platform (job matching, resume analysis, salary prediction, career paths).
 
-**Stack:** Python 3.12+ · FastAPI (via dataenginex[api]) · uv · Ruff · mypy strict · pytest · Port 8003
+**Stack:** Python 3.13+ · FastAPI (via dataenginex[api]) · uv · Ruff · mypy strict · pytest · Port 17003
 
 **Version:** `uv run poe version` | **Depends on:** dataenginex[api] (see `pyproject.toml`)
 
@@ -22,7 +24,7 @@ uv run poe test           # All tests
 uv run poe test-unit      # Unit tests
 uv run poe test-cov       # With coverage
 
-uv run poe dev            # Dev server (port 8003)
+uv run poe dev            # Dev server (port 17003)
 uv run poe docker-up      # Full stack
 ```
 

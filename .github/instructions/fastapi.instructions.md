@@ -23,4 +23,4 @@ applyTo: "src/**/api/**/*.py"
 - `src/careerdex/phases/phase5_api_services.py` — CareerDEX-specific endpoints
 
 ## Port
-- CareerDEX runs on port **8003**
+- CareerDEX runs on port **17003**

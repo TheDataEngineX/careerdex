@@ -4,7 +4,7 @@
 # for local observability development. Not intended for production.
 #
 # Usage:  docker compose up --build
-# Ports:  API 8003 | Prometheus 9090 | Alertmanager 9093
+# Ports:  API 17003 | Prometheus 9090 | Alertmanager 9093
 #         Grafana 3000 | Jaeger UI 16686
 # ---------------------------------------------------------------
 services:
@@ -14,7 +14,7 @@ services:
     build: .
     container_name: careerdex-api
     ports:
-      - "8003:8003"
+      - "17003:17003"
     environment:
       - LOG_LEVEL=INFO
       - OTLP_ENDPOINT=http://jaeger:4317
@@ -22,7 +22,7 @@ services:
       - prometheus
       - jaeger
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8003/health')"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:17003/health')"]
       interval: 30s
       timeout: 10s
       retries: 3

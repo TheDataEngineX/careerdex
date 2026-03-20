@@ -39,4 +39,4 @@
 - [ ] `uv run poe lint` passes
 - [ ] `uv run poe typecheck` passes
 - [ ] `uv run poe test` passes
-- [ ] Real server tested (port 8003)
+- [ ] Real server tested (port 17003)

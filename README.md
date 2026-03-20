@@ -16,13 +16,13 @@ ______________________________________________________________________
 ```bash
 git clone https://github.com/TheDataEngineX/careerdex && cd careerdex
 uv sync
-uv run poe dev                       # Start API → http://localhost:8003
+uv run poe dev                       # Start API → http://localhost:17003
 ```
 
 ## CLI
 
 ```bash
-careerdex serve --port 8003          # Start CareerDEX API server
+careerdex serve --port 17003          # Start CareerDEX API server
 careerdex ingest --source linkedin   # Run job ingestion pipeline
 careerdex match resume.pdf           # Match resume against job database
 careerdex predict-salary resume.pdf  # Predict salary range
@@ -75,7 +75,7 @@ Local JSON / CSV Files
   │  Skill Gaps · Career Paths · Churn   │
   └──────────────────────────────────────┘
          ↓
-  FastAPI Service (:8003)
+  FastAPI Service (:17003)
 ```
 
 ## Project Structure
@@ -100,7 +100,7 @@ careerdex/
 ├── .github/workflows/       # CI/CD pipelines
 ├── pyproject.toml           # Project configuration
 ├── poe_tasks.toml           # Task runner (25+ tasks)
-├── Dockerfile               # Multi-stage container (port 8003)
+├── Dockerfile               # Multi-stage container (port 17003)
 └── docker-compose.yml       # Full stack with observability
 ```
 
@@ -120,7 +120,7 @@ uv run poe test              # All tests
 uv run poe test-cov          # With coverage
 
 # Run
-uv run poe dev               # Dev server (port 8003)
+uv run poe dev               # Dev server (port 17003)
 uv run poe docker-up         # Full stack (API + Prometheus + Grafana + Jaeger)
 ```
 
@@ -132,7 +132,7 @@ uv run poe docker-up         # Start full stack
 uv run poe docker-down       # Stop everything
 ```
 
-Services: CareerDEX API (:8003), Prometheus (:9090), Grafana (:3000), Jaeger (:16686)
+Services: CareerDEX API (:17003), Prometheus (:9090), Grafana (:3000), Jaeger (:16686)
 
 ______________________________________________________________________
 

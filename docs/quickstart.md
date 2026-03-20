@@ -12,22 +12,22 @@ uv sync
 ## 2. Run the Dev Server
 
 ```bash
-uv run poe dev     # Starts FastAPI on http://localhost:8003
+uv run poe dev     # Starts FastAPI on http://localhost:17003
 ```
 
 Verify it works:
 
 ```bash
-curl http://localhost:8003/health
+curl http://localhost:17003/health
 # → {"status":"alive"}
 
-curl http://localhost:8003/api/v1/careerdex/market/trends | python3 -m json.tool
+curl http://localhost:17003/api/v1/careerdex/market/trends | python3 -m json.tool
 ```
 
 ## 3. Try the CLI
 
 ```bash
-careerdex serve --port 8003          # Start API server
+careerdex serve --port 17003          # Start API server
 careerdex ingest --source linkedin   # Run job ingestion pipeline
 careerdex match resume.pdf           # Match resume against job database
 careerdex predict-salary resume.pdf  # Predict salary range
@@ -65,4 +65,4 @@ uv run poe docker-up      # Start full stack (API + Prometheus + Grafana + Jaege
 uv run poe docker-down    # Stop everything
 ```
 
-The API will be available at `http://localhost:8003`.
+The API will be available at `http://localhost:17003`.
